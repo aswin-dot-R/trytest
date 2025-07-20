@@ -1,0 +1,12 @@
+# Gradle
+.gradle/
+/build/
+
+# Android Studio
+.idea/
+
+# Local properties
+local.properties
+
+# Generated
+**/build/
