@@ -1,57 +1,160 @@
-# FusionSLAM-Unifying-Instant-NGP-for-Monocular-SLAM
-Dive into cutting-edge FusionSLAM, where SuperPoint, SuperGlue, Neural Depth Estimation, and Instant-NGP converge, elevating Monocular SLAM to unparalleled precision and performance. Redefining mapping, localization, and reconstruction in a single camera setup.
+# WearOS LSL App for OnePlus Watch 2R
 
+A comprehensive Android app for WearOS 4 that integrates with Lab Streaming Layer (LSL) for research experiments.
 
-## 🏁 Dependencies
-1) NVIDIA Driver ([Official Download Link](https://www.nvidia.com/download/index.aspx))
-2) CUDA Toolkit ([Official Link](https://developer.nvidia.com/cuda-downloads))
-3) ZED SDK ([Official Guide](https://www.stereolabs.com/developers/release/))
-4) OpenCV CUDA ([Github Guide](https://gist.github.com/raulqf/f42c718a658cddc16f9df07ecc627be7))
-5) ROS 2 Humble ([Official Link](https://docs.ros.org/en/humble/Installation.html))
-6) Miniconda ([Official Link](https://docs.conda.io/en/main/miniconda.html))
-7) ZED ROS 2 Wrapper ([Official Github Link](https://github.com/stereolabs/zed-ros2-wrapper))
-8) RTAB-Map ([Official Github Link](https://github.com/introlab/rtabmap))
-9) RTAB-Map ROS 2 ([Official Github Link](https://github.com/introlab/rtabmap_ros/tree/ros2#rtabmap_ros))
-10) PyTorch ([Official Link](https://pytorch.org/))
-11) Instant-ngp ([Official Github Link](https://github.com/NVlabs/instant-ngp))
-12) SuperPoint ([Official Github Link](https://github.com/magicleap/SuperPointPretrainedNetwork))
-13) SuperGlue ([Official Github Link](https://github.com/magicleap/SuperGluePretrainedNetwork))
-14) Nlohmann-JSON ([Official Github Link](https://github.com/nlohmann/json))
+## 🎯 Features
 
-## ⚙️ Install
-1) Install all non ROS 2 libraries
-2) Clone all ROS 2 packages into workspace
-3) Clone reporsitory into ROS 2 workspace
-4) `colcon build --symlink-install --cmake-args -DRTABMAP_SYNC_MULTI_RGBD=ON -DRTABMAP_SYNC_USER_DATA=ON -DPYTHON_EXECUTABLE=/usr/bin/python3 -DCMAKE_BUILD_TYPE=Release --parallel-workers $(nproc) --executor sequential`
-5) `source ~/.bashrc` or source ROS 2 workspace
-6) Run `python trace.py` and change path of SuperPoint weights, this will generate a model compatible with your version of PyTorch
-7) Add libtorch path `export LD_LIBRARY_PATH=LD_LIBRARY_PATH:../miniconda3/envs/rtabmap/lib/python3.10/site-packages/torch/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}` ensure the path is correct else RTAB-Map will not work
+- **LSL Streaming**: Real-time IMU and heart rate data streaming via Lab Streaming Layer
+- **Vibration Feedback**: Receives and executes vibration patterns (e.g., "010101") from LSL commands
+- **Sensor Collection**: 50Hz IMU data (accelerometer, gyroscope, magnetometer) + 1Hz heart rate
+- **WearOS Optimized**: Built specifically for WearOS 4 using Health Services API
 
-## ⌛️ SLAM
-1) Run SLAM to generate dataset
-2) `ros2 launch ngp_ros2 slam.launch.py rgb_topic:=/zed2i/zed_node/rgb/image_rect_color depth_topic:=/zed2i/zed_node/depth/depth_registered camera_info_topic:=/zed2i/zed_node/rgb/camera_info odom_topic:=/zed2i/zed_node/odom imu_topic:=/zed2i/zed_node/imu/data scan_cloud_topic:=/zed2i/zed_node/point_cloud/cloud_registered superpoint_model_path:=../SuperPointPretrainedNetwork/superpoint_v1.pt pydetector_path:=../rtabmap_superpoint.py pymatcher_path:=../rtabmap_superglue.py detection_rate:=1 image_path:=../images/ transform_path:=../transforms.json`
+## 📱 Target Device
 
-<div align="center">
-    <img src="assets/slam.gif" alt="SLAM" width="700"/>
-    <p>SLAM</p>
-</div>
+- **OnePlus Watch 2R** (WearOS 4)
+- Compatible with other WearOS 4+ devices with required sensors
 
-Your dataset should get created in the `image_path` along with `transforms.json` in the `transform_path`
+## 🚀 Quick Start
 
-## 🖼️ Instant-NGP
-1) `cd /instant-ngp/build`
-2) `./instant-ngp ../PATH` give the path to your dataset where `image_path` and `transforms.json` are located 
+### Prerequisites
 
-<div align="center">
-    <img src="assets/nerf.png" alt="SLAM" width="700"/>
-    <p>NERF</p>
-</div>
+- Android Studio Giraffe or newer
+- OnePlus Watch 2R with WearOS 4
+- ADB debugging enabled on watch
+- LSL-compatible receiver on network
 
-## ⚠️ Note
-1) Ensure ZED ROS 2 Wrapper is set to run using Neural Depth Mode and Image quality is set to HD1080 for best renders
-2) This Render uses Depth Supervision, feel free to change RTAB-Map and instant-ngp parameters to generate better renders
+### Building & Installation
 
-## 🔮 Future Updates
-1) Use Pose-Graph from RTAB-Map to include loop closures for better renders
-2) Add Segmentation masks using Semantic Segmentation Network
-3) Generate render using Multi-camera SLAM
+1. **Clone the repository**
+   ```bash
+   git clone <this-repo>
+   cd wearos-lsl-app
+   ```
+
+2. **Open in Android Studio**
+   - Import the project
+   - Let Gradle sync complete
+
+3. **Connect your watch**
+   - Enable Developer Options on watch
+   - Enable ADB debugging
+   - Connect via USB or Wi-Fi
+
+4. **Build and deploy**
+   ```bash
+   ./gradlew installDebug
+   ```
+
+### Usage
+
+1. Launch the app on your watch
+2. Grant all required permissions (sensors, network, etc.)
+3. Tap "Start Sensors" to begin data collection
+4. Tap "Start LSL" to begin streaming
+5. Send vibration commands from your LSL application
+
+## 📊 LSL Streams
+
+### Outgoing Streams
+
+#### IMU Data Stream
+- **Name**: `OnePlusWatch2R_IMU`
+- **Type**: `IMU`
+- **Channels**: 9 (ax, ay, az, gx, gy, gz, mx, my, mz)
+- **Sample Rate**: 50 Hz
+
+#### Heart Rate Stream
+- **Name**: `OnePlusWatch2R_HeartRate`
+- **Type**: `HR`
+- **Channels**: 1 (BPM)
+- **Sample Rate**: 1 Hz
+
+### Incoming Commands
+
+Send LSL markers with vibration patterns:
+```json
+{"pattern": "010101"}
+```
+- 1 = vibrate (100ms default)
+- 0 = pause (100ms default)
+
+## 🔧 Architecture
+
+```
+┌─────────────────┐    ┌──────────────┐    ┌─────────────┐
+│   Sensors       │───▶│ Service      │───▶│ LSL Client  │
+│ • Accelerometer │    │ • Data       │    │ • Network   │
+│ • Gyroscope     │    │   Collection │    │   Streaming │
+│ • Magnetometer  │    │ • Processing │    │ • Discovery │
+│ • Heart Rate    │    │              │    │             │
+└─────────────────┘    └──────────────┘    └─────────────┘
+                                                   │
+┌─────────────────┐    ┌──────────────┐           │
+│ Vibration       │◀───│ Command      │◀──────────┘
+│ • Pattern Exec  │    │ Processing   │
+│ • Haptic Motor  │    │ • Parse LSL  │
+│                 │    │   Commands   │
+└─────────────────┘    └──────────────┘
+```
+
+## 🛠️ Key Components
+
+- **SensorDataService**: Collects sensor data using Health Services
+- **LSLClient**: Manages LSL network communication
+- **VibrationService**: Handles haptic feedback patterns
+- **MainActivity**: WearOS Compose UI
+
+## 📋 Project Structure
+
+```
+wearos-lsl-app/
+├── app/
+│   ├── src/main/java/com/example/wearoslsl/
+│   │   ├── data/           # Data models
+│   │   ├── lsl/            # LSL integration
+│   │   ├── service/        # Background services
+│   │   └── presentation/   # UI components
+│   ├── src/main/res/       # Resources
+│   └── build.gradle        # App dependencies
+├── build.gradle            # Project configuration
+├── settings.gradle         # Module settings
+└── README.md              # This file
+```
+
+## 🔬 Research Applications
+
+Perfect for:
+- Motion analysis experiments
+- Physiological monitoring studies
+- Human-computer interaction research
+- Real-time feedback systems
+- Multi-modal data collection
+
+## 🐛 Troubleshooting
+
+**Permissions Denied**
+- Check Settings > Apps > WearOS LSL > Permissions
+- Ensure BODY_SENSORS permission is granted
+
+**No Heart Rate Data**
+- Ensure watch is worn properly on wrist
+- Check that sensors are clean and making contact
+
+**LSL Connection Issues**
+- Verify Wi-Fi connectivity on watch
+- Check network firewall settings
+- Ensure LSL receiver is running on network
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Lab Streaming Layer (LSL) project
+- WearOS Health Services team
+- Android development community
+
+---
+
+**Note**: This app is designed for research purposes. Ensure compliance with your institution's ethics guidelines and data protection requirements.
